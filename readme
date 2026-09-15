@@ -1,0 +1,98 @@
+Client: React
+Server: ModeJS-Express-PostGreSQL-Opensearch
+
+
+////////////////////////////////////////////////////////////////////////////
+
+
+Running app:
+1: cd to server/
+2: node server.js
+3: In new tab, cd to client/ 
+4: npm run start
+
+
+////////////////////////////////////////////////////////////////////////////
+
+
+Server App available at: 
+http://localhost:8080/ => displays React component 
+http://localhost:8080/users, http://localhost:8080/users/1 etc => Connects with PostgreSQL 
+
+sample body for POST/PUT in http://localhost:8080/users/1 
+{
+  "name": "Shawn Doe",
+  "email": "shawnn@exartemple.com",
+  "password": "hashed-password",
+  "role": "candidate",
+  "status": 0
+}
+
+header: Content-Type: application/json
+
+
+////////////////////////////////////////////////////////////////////////////
+
+
+Client App available at:
+http://localhost:3000/
+
+
+////////////////////////////////////////////////////////////////////////////
+
+
+Opensearch dashboard locally hosted: http://localhost:5601/
+OpenSearch Performance Analyzer at: http://localhost:9200/
+
+Steps: 
+1: docker pull opensearchproject/opensearch:3.1.0
+2: docker pull opensearchproject/opensearch-dashboards:3.1.0
+3: docker network create my-opensearch-network
+
+4: docker run -d \
+  -p 9200:9200 -p 9600:9600 \
+  -e "discovery.type=single-node" \
+  -e "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" \
+  -e "plugins.security.disabled=true" \
+  -e "DISABLE_INSTALL_DEMO_CONFIG=true" \
+  --name my-opensearch-node \
+  --network my-opensearch-network \
+  opensearchproject/opensearch:3.1.0
+
+ 5: Check if running: curl -X GET "http://localhost:9200/" 
+
+  Results should be: 
+          priyanka@Priyankas-MacBook-Pro opensearch % curl -X GET "http://localhost:9200/"
+          {
+            "name" : "57f3df731864",
+            "cluster_name" : "docker-cluster",
+            "cluster_uuid" : "l3gjnaIFS0eo0k-SnV7o5g",
+            "version" : {
+              "distribution" : "opensearch",
+              "number" : "3.1.0",
+              "build_type" : "tar",
+              "build_hash" : "8ff7c6ee924a49f0f59f80a6e1c73073c8904214",
+              "build_date" : "2025-06-21T08:05:50.445588571Z",
+              "build_snapshot" : false,
+              "lucene_version" : "10.2.1",
+              "minimum_wire_compatibility_version" : "2.19.0",
+              "minimum_index_compatibility_version" : "2.0.0"
+            },
+            "tagline" : "The OpenSearch Project: https://opensearch.org/"
+          }
+
+6: run the dashboard:           
+
+docker run -d \
+  -p 5601:5601 \
+  -e "OPENSEARCH_HOSTS=[\"http://my-opensearch-node:9200\"]" \
+  -e "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true" \
+  --name my-opensearch-dashboards \
+  --network my-opensearch-network \
+  opensearchproject/opensearch-dashboards:3.1.0
+
+  7: Check if running: http://localhost:5601/
+
+REF: https://oofnivek.medium.com/macos-running-opensearch-f0ccf3d55af7
+
+  ////////////////////////////////////////////////////////////////////////////
