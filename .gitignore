@@ -16,10 +16,8 @@
 /node_modules
 client/node_modules/
 client/node_modules/.package-lock.json
-client/package-lock.json
 server/node_modules/
 server/node_modules/.package-lock.json
-server/package-lock.json
 /public/.DS_Store
 /vendor/
 Thumbs.db
